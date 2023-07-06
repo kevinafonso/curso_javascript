@@ -1,0 +1,36 @@
+body{
+    background-color: rgb(70,140,241);
+    font: normal 15pt Arial;
+}
+
+header {
+    text-align: center;
+}
+
+section {
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    width: 70vw;
+    margin: auto;
+    height: 70vh;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.342)
+
+}
+
+#msg {
+    display: block;
+    text-align: center;
+    margin: auto;
+    padding: 12px;
+}
+
+#imagem {
+    max-width: 380px;
+    display: block;
+    margin: auto;
+}
+
+footer {
+     text-align: center;
+}

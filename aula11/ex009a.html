@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Função para brasileiro ou estrangeiro</title>
+    <style>
+        body{
+            font: 18px Arial;
+            background-color: rgb(95, 95, 95);
+            color: white;
+        }
+        #txtvel {
+            border-radius: 5px;
+            width: 100px;
+
+        } 
+    </style>
+</head>
+<body>
+    <h1>Descubra se você pode nos representar nas olimpíadas!</h1>
+    Informe o país em que nasceu :  <input type="text" name="txtvel" id="txtvel">
+    <input type="button" value="Verificar" onclick="Nacionalidade()">
+    <div id="res">
+
+    </div>
+
+    <script>
+        function Nacionalidade() {
+            var txtv = window.document.getElementById('txtvel')
+            var res = document.querySelector('div#res')
+            var vel = (txtv.value)
+            if (vel =='Brasil') {
+                res.innerHTML +=`<p> Parabens! Voce pode nos representar nas olimpíadas por ser <strong> brasileiro </strong>. Agora se dedique ao máximo para conseguir uma vaga para nos representar!</p>`
+            } else {
+                res.innerHTML += `<p> Lamentamos em te informar que infelizmente você não poderá nos representar por ser um <strong> estrangeiro </strong>. Porem continue praticando pois independente disso você ainda pode ser um campeão!</p>`
+            }
+        }
+    </script>
+</body>
+</html>
