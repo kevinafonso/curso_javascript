@@ -48,13 +48,29 @@ canvas {
   margin-top: -11px;
 }
 
+/* Tela de Game Over: cobre a tela inteira e centraliza o conteúdo */
 .menu-screen {
-  position: absolute;
+  position: fixed;
+  inset: 0;
   display: none;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   text-align: center;
-  z-index: 1;
+  padding: 16px;
+  background: rgba(25, 25, 25, 0.88);
+  overflow-y: auto;      /* se não couber (celular deitado), dá para rolar */
+  touch-action: pan-y;   /* libera a rolagem só dentro do menu */
+  z-index: 10;
+}
+
+/* centraliza na vertical sem cortar o topo quando o conteúdo é alto */
+.menu-screen > :first-child {
+  margin-top: auto;
+}
+
+.menu-screen > :last-child {
+  margin-bottom: auto;
 }
 
 .game-over {
@@ -152,4 +168,41 @@ canvas {
   justify-content: center;
   gap: 5px;
   cursor: pointer;
+}
+
+/* Celular: jogo mais perto do topo e menu de Game Over mais compacto */
+@media (max-width: 600px) {
+  body {
+    justify-content: flex-start;
+    padding-top: 12px;
+  }
+
+  h1 {
+    font-size: 0.8rem;
+    padding: 4px 12px 8px;
+  }
+
+  .game-over {
+    font-size: 1.8em;
+  }
+
+  .congrats {
+    font-size: 1em;
+  }
+
+  .congrats.first {
+    font-size: 1.15em;
+  }
+
+  .final-score {
+    font-size: 1.15em;
+  }
+
+  .ranking {
+    margin-top: 12px;
+  }
+
+  .btn-play {
+    margin-top: 16px;
+  }
 }
