@@ -156,6 +156,10 @@ canvas {
   border-radius: 8px;
 }
 
+.ranking-list li.empty {
+  opacity: 0.45;
+}
+
 .ranking-list li.new-record {
   background: #ffffff22;
   font-weight: 700;

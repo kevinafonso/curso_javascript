@@ -15,8 +15,8 @@ const audio = new Audio(`audio.mp3`)
 
 const size = 15              // tamanho de cada quadradinho
 const initialSpeed = 150     // velocidade inicial (ms entre cada movimento)
-const speedStep = 2          // quanto acelera a cada comida
-const minSpeed = 40          // limite: nunca fica mais rápido que isso
+const speedStep = 1          // quanto acelera a cada comida
+const minSpeed = 70          // limite: nunca fica mais rápido que isso
 let currentSpeed = initialSpeed
 
 const createSnake = () =>
@@ -236,18 +236,22 @@ const insertEntry = (ranking, position, entry) => {
 const renderRanking = (ranking, highlight) => {
     rankingList.innerHTML = ""
 
-    if (!ranking.length) {
-        renderMessage("Nenhum score ainda")
-        return
-    }
-
-    ranking.forEach((entry, i) => {
+    // sempre desenha as 25 posições; as ainda vazias aparecem com "—"
+    for (let i = 0; i < maxRanking; i++) {
         const item = document.createElement("li")
+        const entry = ranking[i]
         const place = i < medals.length ? medals[i] : `${i + 1}º`
-        item.textContent = `${place} ${entry.name}: ${entry.score}`
+
+        if (entry) {
+            item.textContent = `${place} ${entry.name}: ${entry.score}`
+        } else {
+            item.textContent = `${place} —`
+            item.classList.add("empty")
+        }
+
         if (i === highlight) item.classList.add("new-record")
         rankingList.appendChild(item)
-    })
+    }
 
     // rola a lista até a linha do jogador
     const mine = rankingList.querySelector(".new-record")
