@@ -169,13 +169,14 @@ const firebaseConfig = {
 }
 
 const firebaseVersion = "10.14.1"
-const maxRanking = 10
+const maxRanking = 25
 
 // Cada score é apagado automaticamente pelo Firestore depois deste prazo (política TTL).
 // Se aumentar acima de 120, ajuste também o limite "duration.value(120, 'd')" nas regras.
 const scoreLifetimeDays = 90
 const maxNameLength = 12
 const medals = ["🥇", "🥈", "🥉"]
+document.querySelector(".ranking-title").textContent = `🏆 Top ${maxRanking}`
 
 // Pontuação que ainda está esperando o nome do jogador
 let pending = null
