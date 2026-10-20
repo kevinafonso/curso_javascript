@@ -15,8 +15,8 @@ const audio = new Audio(`audio.mp3`)
 
 const size = 15              // tamanho de cada quadradinho
 const initialSpeed = 150     // velocidade inicial (ms entre cada movimento)
-const speedStep = 1          // quanto acelera a cada comida
-const minSpeed = 70          // limite: nunca fica mais rápido que isso
+const speedStep = 2          // quanto acelera a cada comida
+const minSpeed = 40          // limite: nunca fica mais rápido que isso
 let currentSpeed = initialSpeed
 
 const createSnake = () =>
@@ -378,11 +378,24 @@ const changeDirection = (newDirection) => {
     directionQueue.push(newDirection)
 }
 
-document.addEventListener("keydown", ({ key }) => {
-    if (key == "ArrowRight") changeDirection("right")
-    if (key == "ArrowLeft")  changeDirection("left")
-    if (key == "ArrowDown")  changeDirection("down")
-    if (key == "ArrowUp")    changeDirection("up")
+// Teclas do jogo: setas e W A S D (maiúsculas ou minúsculas)
+const keyDirections = {
+    arrowup: "up",    w: "up",
+    arrowleft: "left", a: "left",
+    arrowdown: "down", s: "down",
+    arrowright: "right", d: "right"
+}
+
+document.addEventListener("keydown", (event) => {
+    if (isGameOver) return                 // pódio aberto: teclado normal, dá para digitar o nome
+    if (event.target === nameInput) return // nunca interfere no campo de nome
+    if (event.ctrlKey || event.metaKey || event.altKey) return // não rouba atalhos (Ctrl+S, Ctrl+W...)
+
+    const newDirection = keyDirections[event.key.toLowerCase()]
+    if (!newDirection) return
+
+    event.preventDefault()                 // evita rolar a página com as setas
+    changeDirection(newDirection)
 })
 
 // Deslizar o dedo
