@@ -15,8 +15,8 @@ const audio = new Audio(`audio.mp3`)
 
 const size = 15              // tamanho de cada quadradinho
 const initialSpeed = 150     // velocidade inicial (ms entre cada movimento)
-const speedStep = 1          // quanto acelera a cada comida
-const minSpeed = 70          // limite: nunca fica mais rápido que isso
+const speedStep = 2          // quanto acelera a cada comida
+const minSpeed = 50          // limite: nunca fica mais rápido que isso
 let currentSpeed = initialSpeed
 
 const createSnake = () =>
