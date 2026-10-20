@@ -15,8 +15,8 @@ const audio = new Audio(`audio.mp3`)
 
 const size = 15              // tamanho de cada quadradinho
 const initialSpeed = 150     // velocidade inicial (ms entre cada movimento)
-const speedStep = 2          // quanto acelera a cada comida
-const minSpeed = 65          // limite: nunca fica mais rápido que isso
+const speedStep = 1          // quanto acelera a cada comida
+const minSpeed = 70          // limite: nunca fica mais rápido que isso
 let currentSpeed = initialSpeed
 
 const createSnake = () =>
@@ -41,12 +41,14 @@ const randomPosition = () => {
     return Math.round(number / size) * size
 }
 
-const randomColor = () => {
-    const red = randomNumber(0, 255)
-    const green = randomNumber(0, 255)
-    const blue = randomNumber(0, 255)
+// 100 cores vivas e claras (saturação 100%, luminosidade 55% a 70%),
+// todas bem longe do preto do fundo
+const foodColors = Array.from({ length: 100 }, (_, i) =>
+    `hsl(${Math.round(i * 3.6)}, 100%, ${[55, 62, 70][i % 3]}%)`
+)
 
-    return `rgb(${red}, ${green}, ${blue})`
+const randomColor = () => {
+    return foodColors[Math.floor(Math.random() * foodColors.length)]
 }
 
 const food = {
@@ -55,7 +57,8 @@ const food = {
     color: randomColor()
 }
 
-let direction
+let direction            // direção em que a cobrinha está andando
+let directionQueue = []  // viradas pedidas, executadas uma por movimento
 let loopId
 let isGameOver = false   // trava o jogo depois que a cobrinha morre
 
@@ -81,6 +84,9 @@ const drawSnake = () => {
 }
 
 const moveSnake = () => {
+    // a cada movimento, aplica no máximo UMA virada da fila
+    if (directionQueue.length) direction = directionQueue.shift()
+
     if (!direction) return
 
     const head = snake[snake.length - 1]
@@ -163,7 +169,11 @@ const firebaseConfig = {
 }
 
 const firebaseVersion = "10.14.1"
-const maxRanking = 3
+const maxRanking = 10
+
+// Cada score é apagado automaticamente pelo Firestore depois deste prazo (política TTL).
+// Se aumentar acima de 120, ajuste também o limite "duration.value(120, 'd')" nas regras.
+const scoreLifetimeDays = 90
 const maxNameLength = 12
 const medals = ["🥇", "🥈", "🥉"]
 
@@ -201,7 +211,8 @@ const loadRanking = async () => {
 // Grava um novo score no banco
 const saveScore = async (name, score) => {
     const { db, collection, addDoc, serverTimestamp } = await getFirebase()
-    await addDoc(collection(db, "scores"), { name, score, createdAt: serverTimestamp() })
+    const expireAt = new Date(Date.now() + scoreLifetimeDays * 24 * 60 * 60 * 1000)
+    await addDoc(collection(db, "scores"), { name, score, createdAt: serverTimestamp(), expireAt })
 }
 
 // Devolve a posição em que a pontuação entra (0 = 1º lugar) ou -1 se não entra
@@ -224,15 +235,22 @@ const insertEntry = (ranking, position, entry) => {
 const renderRanking = (ranking, highlight) => {
     rankingList.innerHTML = ""
 
-    for (let i = 0; i < maxRanking; i++) {
+    if (!ranking.length) {
+        renderMessage("Nenhum score ainda")
+        return
+    }
+
+    ranking.forEach((entry, i) => {
         const item = document.createElement("li")
-        const entry = ranking[i]
-        item.textContent = entry
-            ? `${medals[i]} ${entry.name}: ${entry.score}`
-            : `${medals[i]} —`
+        const place = i < medals.length ? medals[i] : `${i + 1}º`
+        item.textContent = `${place} ${entry.name}: ${entry.score}`
         if (i === highlight) item.classList.add("new-record")
         rankingList.appendChild(item)
-    }
+    })
+
+    // rola a lista até a linha do jogador
+    const mine = rankingList.querySelector(".new-record")
+    if (mine) mine.scrollIntoView({ block: "nearest" })
 }
 
 const renderMessage = (text) => {
@@ -270,7 +288,7 @@ const showResult = async (points) => {
     congrats.classList.toggle("first", position === 0)
     congrats.innerText = position === 0
         ? "🏆 PARABÉNS! Você é o número 1 agora!"
-        : `🎉 Parabéns! Você entrou no Top 3 (${position + 1}º lugar)!`
+        : `🎉 Parabéns! Você entrou no Top ${maxRanking} (${position + 1}º lugar)!`
 
     // mostra uma prévia do ranking e pede o nome
     pending = { points, position }
@@ -309,6 +327,7 @@ const gameOver = () => {
     isGameOver = true
     clearTimeout(loopId)
     direction = undefined
+    directionQueue = []
 
     menu.style.display = "flex"
     finalScore.innerText = score.innerText
@@ -336,12 +355,22 @@ gameLoop()
 // ---------- CONTROLES ----------
 
 // Função única usada pelo teclado e pelo toque
+const opposites = { left: "right", right: "left", up: "down", down: "up" }
+
 const changeDirection = (newDirection) => {
     if (isGameOver) return   // ignora setas e deslizes depois de morrer
-    if (newDirection == "right" && direction != "left")  direction = "right"
-    if (newDirection == "left"  && direction != "right") direction = "left"
-    if (newDirection == "down"  && direction != "up")    direction = "down"
-    if (newDirection == "up"    && direction != "down")  direction = "up"
+
+    // compara com a última virada pedida (ou com a direção atual).
+    // Antes do primeiro movimento a cobrinha está virada para a direita.
+    const last = directionQueue.length
+        ? directionQueue[directionQueue.length - 1]
+        : (direction ?? "right")
+
+    if (newDirection == last) return               // mesma direção
+    if (newDirection == opposites[last]) return    // voltar em cima de si mesma
+    if (directionQueue.length >= 2) return         // fila cheia
+
+    directionQueue.push(newDirection)
 }
 
 document.addEventListener("keydown", ({ key }) => {
@@ -384,7 +413,13 @@ buttonPlay.addEventListener("click", () => {
 
     snake = createSnake()
     direction = undefined
+    directionQueue = []
     currentSpeed = initialSpeed
     isGameOver = false
     gameLoop()   // reinicia o loop, que foi parado no Game Over
+})
+
+// Impede que arrastar o dedo selecione o jogo ou os textos (exceto o campo de nome)
+document.addEventListener("selectstart", (event) => {
+    if (event.target !== nameInput) event.preventDefault()
 })
