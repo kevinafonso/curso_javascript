@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: #191919;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: white;
+  touch-action: none; /* impede a página de rolar/dar zoom ao deslizar */
+}
+
+h1 {
+  font-size: 0.85rem;
+  font-weight: 400;
+  text-align: center;
+  padding: 10px;
+  opacity: 0.7;
+}
+
+canvas {
+  background-color: #1115;
+  /* nunca maior que 100% da largura, 66% da altura da tela ou 660px */
+  width: min(100vw, 66vh, 660px);
+  height: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.54em;
+}
+
+.score-value {
+  font-weight: 700;
+  font-size: 2.42em;
+  display: block;
+  margin-top: -11px;
+}
+
+.menu-screen {
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  z-index: 1;
+}
+
+.game-over {
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 2.2em;
+}
+
+.final-score {
+  font-weight: 500;
+  font-size: 1.3em;
+}
+
+.congrats {
+  margin-top: 10px;
+  font-weight: 600;
+  font-size: 1.1em;
+  color: #ffd54a;
+}
+
+.congrats:empty {
+  display: none;
+}
+
+.congrats.first {
+  font-size: 1.3em;
+  color: #ffc107;
+}
+
+.name-form {
+  display: none;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.name-input {
+  width: 150px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 100px;
+  font-size: 16px;
+  outline: none;
+}
+
+.btn-save {
+  border: none;
+  border-radius: 100px;
+  padding: 8px 16px;
+  font-size: 1em;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+}
+
+.ranking {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ranking-title {
+  font-size: 0.9em;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ranking-list {
+  list-style: none;
+  margin-top: 6px;
+}
+
+.ranking-list li {
+  font-size: 1.1em;
+  padding: 2px 14px;
+  border-radius: 8px;
+}
+
+.ranking-list li.new-record {
+  background: #ffffff22;
+  font-weight: 700;
+}
+
+.btn-play {
+  border: none;
+  border-radius: 100px;
+  padding: 10px 15px 10px 12px;
+  font-size: 1em;
+  font-weight: 600;
+  color: #333;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+}
